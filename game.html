@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Raid Leader Simulator</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  </head>
+
+<button id="startGameButton">Start Game</button>
+<button id="pullButton" class="locked" disabled>Pull</button>
+<button id="motivateButton" class="locked" disabled>Motivate</button>
+<button id="rageButton" class="locked" disabled>Rage</button>
+<button id="lfmButton" class="locked" disabled>LFM</button>
+
+<br>
+GM Commands
+<button id="reduceTimeButton">Reduce Time</button>
+
+
+<script src="js/main.js"></script>
+
+<br>
+<span>Boss Health: </span><span id="bossHealth"></span>
+<br>
+<span>Loot: </span><span id="loot"></span>
+<br>
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Personality</th>
+    <th>DPS</th>
+    <th>Gear</th>
+    <th>Spirit</th>
+    <th>Time</th>
+  </tr>
+<script>
+// Table values
+  for (i = 1; i <= raidSize; i++) {
+    document.write('<tr>'
+    +'<td id="id'+i+'">'+persons[i].id+'</td>'
+    +'<td id="personality'+i+'">'+persons[i].personality+'</td>'
+    +'<td id="dps'+i+'">'+persons[i].dps+'</td>'
+    +'<td id="gear'+i+'">'+persons[i].gear+'</td>'
+    +'<td id="spirit'+i+'">'+persons[i].spirit+'</td>'
+    +'<td id="time'+i+'">'+persons[i].time+'</td>'
+    +'</tr>')
+  }
+</script>
+<table>
+
+<script src="js/update.js"></script>
+
+</html>
