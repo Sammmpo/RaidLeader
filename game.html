@@ -8,10 +8,17 @@
   </head>
 
 <button id="startGameButton">Start Game</button>
+<br>
 <button id="pullButton" class="locked" disabled>Pull</button>
-<button id="motivateButton" class="locked" disabled>Motivate</button>
-<button id="rageButton" class="locked" disabled>Rage</button>
 <button id="lfmButton" class="locked" disabled>LFM</button>
+
+<label>
+  <input type="checkbox" id="cheerButton" name="cheerButton" disabled>Cheer
+</label>
+
+<label>
+  <input type="checkbox" id="rageButton" name="rageButton" disabled>Rage
+</label>
 
 <br>
 GM Commands
@@ -20,6 +27,8 @@ GM Commands
 
 <script src="js/main.js"></script>
 
+<br>
+<span>Player Count: </span><span id="playerCount"></span>
 <br>
 <span>Boss Health: </span><span id="bossHealth"></span>
 <br>
@@ -37,18 +46,29 @@ GM Commands
   </tr>
 <script>
 // Table values
-  for (i = 1; i <= raidSize; i++) {
+
+  document.write('<tr>'
+  +'<td id="id-player"></td>'
+  +'<td id="personality-player"></td>'
+  +'<td id="dps-player"></td>'
+  +'<td id="gear-player"></td>'
+  +'<td id="spirit-player"></td>'
+  +'<td id="time-player"></td>'
+  +'</tr>')
+  for (i = 1; i < raidSize; i++) {
     document.write('<tr>'
-    +'<td id="id'+i+'">'+persons[i].id+'</td>'
-    +'<td id="personality'+i+'">'+persons[i].personality+'</td>'
-    +'<td id="dps'+i+'">'+persons[i].dps+'</td>'
-    +'<td id="gear'+i+'">'+persons[i].gear+'</td>'
-    +'<td id="spirit'+i+'">'+persons[i].spirit+'</td>'
-    +'<td id="time'+i+'">'+persons[i].time+'</td>'
+    +'<td id="id'+i+'"></td>'
+    +'<td id="personality'+i+'"></td>'
+    +'<td id="dps'+i+'"></td>'
+    +'<td id="gear'+i+'"></td>'
+    +'<td id="spirit'+i+'"></td>'
+    +'<td id="time'+i+'"></td>'
     +'</tr>')
   }
 </script>
 <table>
+
+<p>Personalities: 0="NotInGroup", 1="Raid Leader", 2="Common"</p>
 
 <script src="js/update.js"></script>
 
