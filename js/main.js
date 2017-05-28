@@ -5,7 +5,7 @@ var raidSize = 10;
 
 var playerCount = 0;
 var bossHealth = 1000000;
-var loot = 0;
+var loot = 100;
 var rage = 0;
 var cheer = 0;
 
@@ -23,6 +23,17 @@ class Player {
       return this.gear * this.spirit;
   }
 
+  takeLoot(loot) {
+    this.gear = this.gear + loot;
+  }
+
+  giftLoot(loot) {
+    this.takeLoot(loot);
+    for (i = 1; i < raidSize; i++) {
+      member[i].takeDrama(5); // Everyone but leader -5 (-45).
+    }
+  }
+
 }
 
 class Member {
@@ -32,7 +43,7 @@ class Member {
 	this.spirit = spirit;
 	this.time = time;
 	this.active = active;
-  this.personality = Math.floor((Math.random() * 2) + 2);
+  this.personality = Math.floor((Math.random() * 5) + 2);
 
   for (var j = 0; j < 15; j++) {
 	var rollStats = Math.floor((Math.random() * 3) + 1);
@@ -43,9 +54,42 @@ class Member {
   }
 
   get dps() {
+    var damage = this.gear * this.spirit;
       if (rage == 1) {
-        return this.gear * this.spirit * 2;
-      } else { return this.gear * this.spirit; }
+        damage = this.gear * this.spirit * 2;
+      }
+      if (this.personality == 6) { damage = damage / 2; } // Noob
+      return damage;
+  }
+
+  takeDrama(drama) {
+    if (this.personality == 5) { drama = drama * 2 } // Butthurt
+    this.spirit = this.spirit - drama;
+  }
+
+  takeBoost(boost) {
+    this.spirit = this.spirit + boost;
+  }
+
+  takeCheer(cheer) {
+    this.takeBoost(cheer);
+  }
+
+  takeLoot(loot) {
+    this.gear = this.gear + loot;
+    this.takeBoost(20);
+    if (this.personality == 3) { this.takeBoost(10); } // This Loot Hoarder +10.
+    for (i = 1; i < raidSize; i++) {
+      if (member[i].personality == 3) { member[i].takeDrama(10); } // All Loot Hoarders -10.
+    }
+  }
+
+  giftLoot(loot) {
+    this.takeLoot(loot);
+    this.takeBoost(5); // This gets Loot, so avoid the following -5.
+    for (i = 1; i < raidSize; i++) {
+      member[i].takeDrama(5); // Everyone except leader -5 (-40).
+    }
   }
 
 }
@@ -60,8 +104,32 @@ function spawnRaid(){
 
 var startGameButton = document.getElementById("startGameButton");
 startGameButton.addEventListener("click", startGame);
+function startGame() {
+  startGameButton.classList.add("locked");
+  document.getElementById("startGameButton").disabled = true;
+  pullButton.classList.remove("locked");
+  document.getElementById("pullButton").disabled = false;
+  document.getElementById("cheerButton").disabled = false;
+  document.getElementById("rageButton").disabled = false;
+  rollLootButton.classList.remove("locked");
+  document.getElementById("rollLootButton").disabled = false;
+  giftLootButton.classList.remove("locked");
+  document.getElementById("giftLootButton").disabled = false;
+  spawnRaid();
+  timer();
+  liveCheck();
+  updateGUI();
+}
+
+
+
 var pullButton = document.getElementById("pullButton");
 pullButton.addEventListener("click", pull);
+function pull() {
+  dps();
+  pullButton.classList.add("locked");
+  document.getElementById("pullButton").disabled = true;
+}
 
 
 var rageButton = document.querySelector("input[name=rageButton]");
@@ -72,7 +140,7 @@ if(this.checked) {
     rageInterval = window.setInterval(function(){
       for (i = 1; i < raidSize; i++) {
         if (member[i].personality !== 0) {
-          member[i].spirit -= 1;
+          member[i].takeDrama(1);
         }
       }
     }, 1000);
@@ -90,7 +158,7 @@ if(this.checked) {
     cheerInterval = window.setInterval(function(){
       for (i = 1; i < raidSize; i++) {
         if (member[i].personality !== 0 && member[i].spirit < 100) {
-          member[i].spirit += 1;
+          member[i].takeCheer(1);
         }
       }
     }, 1000);
@@ -100,28 +168,10 @@ if(this.checked) {
   }
 }
 
-var reduceTimeButton = document.getElementById("reduceTimeButton");
-reduceTimeButton.addEventListener("click", gmReduceTime);
-
-function startGame() {
-  startGameButton.classList.add("locked");
-  document.getElementById("startGameButton").disabled = true;
-  pullButton.classList.remove("locked");
-  document.getElementById("pullButton").disabled = false;
-  document.getElementById("cheerButton").disabled = false;
-  document.getElementById("rageButton").disabled = false;
-  spawnRaid();
-  timer();
-  liveCheck();
-  updateGUI();
-}
 
 
-function pull() {
-  dps();
-  pullButton.classList.add("locked");
-  document.getElementById("pullButton").disabled = true;
-}
+
+
 
 function timer() {
   var timeInterval = window.setInterval(function(){
@@ -133,7 +183,7 @@ function timer() {
 
 function liveCheck() {
   var checkInterval = window.setInterval(function(){
-    if (member[0].time <= 0) { location.reload(); }
+    if (member[0].time <= 0) { location.reload(); } // F5 if player time expires.
     var count = 1;
     for (i = 1; i < raidSize; i++) {
       member[i].dps = member[i].gear * member[i].spirit;
@@ -164,15 +214,44 @@ function dps() {
     if (bossHealth <= 0) { // Boss dies.
       clearInterval(dpsInterval);
       bossHealth = 1000000;
-      loot += 1;
+      loot += 20;
       pullButton.classList.remove("locked");
       document.getElementById("pullButton").disabled = false;
     }
   }, 1000);
 }
 
+var rollLootButton = document.getElementById("rollLootButton");
+rollLootButton.addEventListener("click", rollLoot);
+function rollLoot() {
+  if (loot >= 10) {
+    var roll = Math.floor(Math.random() * raidSize);
+    member[roll].takeLoot(20);
+    loot -= 20;
+  }
+}
 
+function processForm(e) {
+    if (e.preventDefault) e.preventDefault();
+    var id = document.querySelector('input[name="memberid"]:checked').value;;
+    if (loot > 0) {
+      member[id].giftLoot(20);
+      loot -= 20;
+    }
+    return false;
+}
 
+var form = document.getElementById('giftForm');
+if (form.attachEvent) {
+    form.attachEvent("submit", processForm);
+} else {
+    form.addEventListener("submit", processForm);
+}
+
+// GM Commands for testing
+
+var reduceTimeButton = document.getElementById("reduceTimeButton");
+reduceTimeButton.addEventListener("click", gmReduceTime);
 function gmReduceTime() {
   for (i = 0; i < raidSize; i++) {
       member[i].time -= 100;
