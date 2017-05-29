@@ -24,3 +24,7 @@ table#t01 th {
     background-color: black;
     color: white;
 }
+
+form {
+    display: inline;
+}

@@ -29,6 +29,8 @@ GM Commands:
 <br>
 <span>Player Count: </span><span id="playerCount"></span>
 <br>
+<span>Total Raid DPS: </span><span id="dpsTotal"></span>
+<br>
 <span>Boss Health: </span><span id="bossHealth"></span>
 <br>
 <span>Loot: </span><span id="loot"></span>
@@ -36,7 +38,7 @@ GM Commands:
 
 <form id="giftForm">
   <input type="submit" id="giftLootButton" value="Gift" class="locked" disabled></input>
-  <input type="radio" name="memberid" value="0">
+  <input type="radio" name="memberid" value="0" checked="checked">
   <input type="radio" name="memberid" value="1">
   <input type="radio" name="memberid" value="2">
   <input type="radio" name="memberid" value="3">
@@ -48,7 +50,24 @@ GM Commands:
   <input type="radio" name="memberid" value="9">
 </form>
 <br>
+<form id="kickForm">
+  <input type="submit" id="kickButton" value="Kick" class="locked" disabled></input>
+  <input type="radio" name="memberKickId" value="0" checked="checked">
+  <input type="radio" name="memberKickId" value="1">
+  <input type="radio" name="memberKickId" value="2">
+  <input type="radio" name="memberKickId" value="3">
+  <input type="radio" name="memberKickId" value="4">
+  <input type="radio" name="memberKickId" value="5">
+  <input type="radio" name="memberKickId" value="6">
+  <input type="radio" name="memberKickId" value="7">
+  <input type="radio" name="memberKickId" value="8">
+  <input type="radio" name="memberKickId" value="9">
+</form>
+<br>
 
+<script src="js/player.js"></script>
+<script src="js/member.js"></script>
+<script src="js/buttons.js"></script>
 <script src="js/main.js"></script>
 
 <table>
@@ -91,7 +110,7 @@ GM Commands:
   <li>1 = Raid Leader (player)</li>
   <li>2 = Common (No special features)</li>
   <li>3 = Loot Hoarder (Takes 10 Drama if doesn't get Loot.)</li>
-  <li>4 = Guild Officer (Won't leave at 0 Spirit. Can't be kicked.) *COMING SOON*</li>
+  <li>4 = Kid (-50% Time)</li>
   <li>5 = Butthurt (+100% Drama taken)</li>
   <li>6 = Noob (-50% DPS)</li>
 </ul>
@@ -104,8 +123,8 @@ GM Commands:
 
 <ul>
   Leader Abilities:
-  <li>Cheer (toggle): Stop DPS and increase everyone's Spirit 1 per second (up to 100 Spirit).</li>
-  <li>Rage (toggle): All DPS is increased by 100%, but deal 1 Drama per second to all other members.</li>
+  <li>Cheer (toggle): All DPS is -100%, but boost everyone's Spirit 1 per second (up to 100 Spirit).</li>
+  <li>Rage (toggle): All DPS is +100%, but deal 1 Drama per second to all other members.</li>
 </ul>
 
 <ul>
