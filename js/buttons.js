@@ -13,6 +13,11 @@ function startGame() {
   document.getElementById("giftLootButton").disabled = false;
   kickButton.classList.remove("locked");
   document.getElementById("kickButton").disabled = false;
+  var targetButtons = document.getElementsByClassName("targetButton");
+  for (i = 0; i < targetButtons.length; i++) {
+    targetButtons[i].disabled = false;
+    targetButtons[i].classList.remove("locked");
+  }
   createRaid();
   timer();
   liveCheck();
@@ -74,6 +79,14 @@ function rollLoot() {
   }
 }
 
+var query = document.querySelectorAll('.targetButton');
+for (var i = 0; i < query.length; i++) {
+    query[i].addEventListener("click", target);
+}
+function target(event) {
+  targetId = event.target.name;
+}
+
 function processGiftForm(e) {
     if (e.preventDefault) e.preventDefault();
     var giftId = document.querySelector('input[name="memberid"]:checked').value;;
@@ -107,6 +120,7 @@ if (kickForm.attachEvent) {
 } else {
     kickForm.addEventListener("submit", processKickForm);
 }
+
 
 // GM Commands for testing
 

@@ -21,6 +21,7 @@ for (i = 1; i < member.length; i++) {
   document.getElementById("dpsTotal").innerHTML = dpsTotal;
   document.getElementById("bossHealth").innerHTML = bossHealth;
   document.getElementById("loot").innerHTML = loot;
+  document.getElementById("targetId").innerHTML = targetId;
 }, 10);
 
 }

@@ -15,6 +15,7 @@ var bossHealth = 1000000;
 var loot = 100;
 var rage = 0;
 var cheer = 0;
+var targetId = 1;
 
 function createRaid(){
   member.push(new Player(0, 100, 100, 1200, 1));
