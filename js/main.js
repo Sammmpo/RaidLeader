@@ -2,6 +2,7 @@
 
 var member = [];
 var raidSize = 10;
+createRaid();
 
 var persNames = [
   "None",
@@ -12,15 +13,16 @@ var persNames = [
 var playerCount = 0;
 var dpsTotal = 0;
 var bossHealth = 1000000;
-var loot = 100;
+var loot = 20;
 var rage = 0;
 var cheer = 0;
-var targetId = 1;
+var targetId = 0;
 
 function createRaid(){
-  member.push(new Player(0, 100, 100, 1200, 1));
+  member.splice(0, 10);
+  member.push(new Player(0, 100, 100, 900, 1));
   for (i = 1; i < raidSize; i++) {
-    member.push(new Member(i, 50, 50, 300, 1));
+    member.push(new Member(i, 50, 50, 200, 1));
   }
 }
 
@@ -36,10 +38,13 @@ function timer() {
 function liveCheck() {
   var checkInterval = window.setInterval(function(){
     if (member[0].time <= 0) { location.reload(); } // F5 if player time expires.
-    var count = 1;
+    var count = 0;
     var dpsCount = 0;
-    for (i = 1; i < member.length; i++) {
-      if (member[i].personality !== 0) { count++; dpsCount = dpsCount + member[i].dps }
+    for (i = 0; i < member.length; i++) {
+      if (member[i].personality !== null) {
+        count++;
+        dpsCount = dpsCount + member[i].dps
+      }
       playerCount = count;
       dpsTotal = dpsCount;
     }
@@ -50,8 +55,8 @@ function liveCheck() {
 function dps() {
   var dpsInterval = window.setInterval(function(){
     if (bossHealth > 0 && cheer == 0) {
-      for (i = 0; i < raidSize; i++) {
-          if (member[i].active == 1 && member[i].personality !== 0) {
+      for (i = 0; i < member.length; i++) {
+          if (member[i].active == 1 && member[i].personality !== null) {
             bossHealth -= member[i].dps;
           }
           if (bossHealth < 0) { bossHealth = 0; }
@@ -61,6 +66,9 @@ function dps() {
       clearInterval(dpsInterval);
       bossHealth = 3000000;
       loot += 20;
+      for (i = 1; i < member.length; i++) {
+        member[i].takeBoost(10);
+      }
       pullButton.classList.remove("locked");
       document.getElementById("pullButton").disabled = false;
     }

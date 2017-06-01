@@ -9,13 +9,15 @@ var raidTable = window.setInterval(function(){
   document.getElementById("gear-player").innerHTML = member[0].gear;
   document.getElementById("spirit-player").innerHTML = member[0].spirit;
   document.getElementById("time-player").innerHTML = member[0].time;
+  document.getElementById("active-player").innerHTML = member[0].active;
 for (i = 1; i < member.length; i++) {
   document.getElementById("id"+i).innerHTML = member[i].id;
   document.getElementById("personality"+i).innerHTML = member[i].persName;
-  document.getElementById("dps"+i).innerHTML = member[i].dps;
+  document.getElementById("dps"+i).innerHTML = Math.round(member[i].dps);
   document.getElementById("gear"+i).innerHTML = member[i].gear;
-  document.getElementById("spirit"+i).innerHTML = member[i].spirit;
+  document.getElementById("spirit"+i).innerHTML = Math.round(member[i].spirit);
   document.getElementById("time"+i).innerHTML = member[i].time;
+  document.getElementById("active"+i).innerHTML = member[i].active;
 }
   document.getElementById("playerCount").innerHTML = playerCount;
   document.getElementById("dpsTotal").innerHTML = dpsTotal;

@@ -13,6 +13,8 @@ function startGame() {
   document.getElementById("giftLootButton").disabled = false;
   kickButton.classList.remove("locked");
   document.getElementById("kickButton").disabled = false;
+  lfmButton.classList.remove("locked");
+  document.getElementById("lfmButton").disabled = false;
   var targetButtons = document.getElementsByClassName("targetButton");
   for (i = 0; i < targetButtons.length; i++) {
     targetButtons[i].disabled = false;
@@ -30,6 +32,48 @@ function pull() {
   dps();
   pullButton.classList.add("locked");
   document.getElementById("pullButton").disabled = true;
+}
+
+var rollLootButton = document.getElementById("rollLootButton");
+rollLootButton.addEventListener("click", rollLoot);
+function rollLoot() {
+  if (loot >= 1) {
+    var roll = Math.floor(Math.random() * member.length);
+    member[roll].takeLoot(loot);
+    loot -= loot;
+  }
+}
+
+var giftLootButton = document.getElementById("giftLootButton");
+giftLootButton.addEventListener("click", gift);
+function gift() {
+  if (member[targetId].personality !== null && loot >= 1) {
+    member[targetId].giftLoot(loot);
+    loot -= loot;
+  }
+}
+
+var kickButton = document.getElementById("kickButton");
+kickButton.addEventListener("click", kick);
+function kick() {
+  if (member[targetId].personality !== 1 && member[targetId].personality !== null) {
+    member[targetId].leaveRaid();
+      for (i = 1; i < member.length; i++) {
+          //member[i].takeDrama(5);
+      }
+  }
+}
+
+var lfmButton = document.getElementById("lfmButton");
+lfmButton.addEventListener("click", lfm);
+function lfm() {
+  if (member[targetId].personality == null) {
+    for (i = 0; i < member.length; i++) {
+      if (member[i].personality !== null) { member[i].time -= 60; }
+      if (member[i].time <= 0) { member[i].leaveRaid(); }
+    }
+    member[targetId] = (new Member(targetId, 50, 50, 200, 1));
+  }
 }
 
 
@@ -69,16 +113,6 @@ if(this.checked) {
   }
 }
 
-var rollLootButton = document.getElementById("rollLootButton");
-rollLootButton.addEventListener("click", rollLoot);
-function rollLoot() {
-  if (loot >= 20) {
-    var roll = Math.floor(Math.random() * member.length);
-    member[roll].takeLoot(20);
-    loot -= 20;
-  }
-}
-
 var query = document.querySelectorAll('.targetButton');
 for (var i = 0; i < query.length; i++) {
     query[i].addEventListener("click", target);
@@ -87,47 +121,21 @@ function target(event) {
   targetId = event.target.name;
 }
 
-function processGiftForm(e) {
-    if (e.preventDefault) e.preventDefault();
-    var giftId = document.querySelector('input[name="memberid"]:checked').value;;
-    if (member[giftId].personality !== null && loot >= 20) {
-      member[giftId].giftLoot(20);
-      loot -= 20;
-    }
-    return false;
-}
-var giftForm = document.getElementById('giftForm');
-if (giftForm.attachEvent) {
-    giftForm.attachEvent("submit", processGiftForm);
-} else {
-    giftForm.addEventListener("submit", processGiftForm);
-}
 
-function processKickForm(e) {
-    if (e.preventDefault) e.preventDefault();
-    var kickId = document.querySelector('input[name="memberKickId"]:checked').value;;
-      if (member[kickId].personality !== 1 && member[kickId].personality !== null) {
-        member[kickId].leaveRaid();
-          for (i = 1; i < member.length; i++) {
-              member[i].takeDrama(5);
-          }
-        } else { console.log("You can't kick this!"); }
-    return false;
-}
-var kickForm = document.getElementById('kickForm');
-if (kickForm.attachEvent) {
-    kickForm.attachEvent("submit", processKickForm);
-} else {
-    kickForm.addEventListener("submit", processKickForm);
-}
-
-
-// GM Commands for testing
+// Testing Buttons
 
 var reduceTimeButton = document.getElementById("reduceTimeButton");
 reduceTimeButton.addEventListener("click", gmReduceTime);
 function gmReduceTime() {
   for (i = 0; i < member.length; i++) {
       if (member[i].personality !== null) { member[i].time -= 100; }
+  }
+}
+
+var inactiveButton = document.getElementById("inactiveButton");
+inactiveButton.addEventListener("click", gmInactive);
+function gmInactive() {
+  if (member[targetId].personality !== null) {
+    member[targetId].goInactive(1000);
   }
 }

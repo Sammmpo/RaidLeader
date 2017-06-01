@@ -6,12 +6,14 @@ class Member {
 	this.time = time;
 	this.active = active;
   this.personality = Math.floor((Math.random() * 5) + 2);
+  this.goInactive = this.goInactive.bind(this);
+  this.activeAgain = this.activeAgain.bind(this);
 
   for (var j = 0; j < 15; j++) {
 	var rollStats = Math.floor((Math.random() * 3) + 1);
       if (rollStats == 1) { this.gear += 10; }
       if (rollStats == 2) { this.spirit += 10; }
-      if (rollStats == 3) { this.time += 60; }
+      if (rollStats == 3) { this.time += 40; }
   }
   if (this.personality == 4) { this.time = this.time / 2 } // Kid
 
@@ -22,13 +24,18 @@ class Member {
     if(this.personality == null) { return false; } else { return true; }
   }
 
+  get checkActive() {
+    if(this.active == null || this.active == 0) { return false; } else { return true; }
+  }
+
   get dps() {
     var damage = this.gear * this.spirit;
       if (rage == 1) {
-        damage = this.gear * this.spirit * 2;
+        damage = damage * 2;
       }
       if (this.personality == 6) { damage = damage / 2; } // Noob
       if (this.personality == null) { damage = ""; }
+      damage = damage * this.active;
       return damage;
   }
 
@@ -39,19 +46,34 @@ class Member {
 
   takeDrama(drama) {
     if(!this.valid) return;
-    if (this.personality == 5) { drama = drama * 2 } // Butthurt
-    this.spirit = this.spirit - drama;
-    if (this.spirit <= 0) {
-      for (i = 1; i < raidSize; i++) {
-        member[i].takeDrama(10); // Everyone except leader -10 (-80).
+    if(!this.checkActive) return;
+      if (this.personality == 5) { drama = drama * 2 } // Butthurt
+      this.spirit = this.spirit - drama;
+      if (this.spirit <= 0) {
+        this.rageQuit();
       }
-      this.leaveRaid();
+  }
+
+
+  goInactive(time) {
+    if(!this.checkActive) return;
+    this.active = 0;
+    setTimeout(this.activeAgain, time);
+  }
+  activeAgain(){ this.active = 1; }
+
+  rageQuit() {
+    this.leaveRaid();
+    for (i = 1; i < member.length; i++) { // Rage Quit
+      member[i].takeDrama(10); // Everyone except leader -10 (-80).
     }
   }
 
   takeBoost(boost) {
     if(!this.valid) return;
-    this.spirit = this.spirit + boost;
+    if(!this.checkActive) return;
+    if (this.spirit < 150) { this.spirit = this.spirit + boost; }
+    if (this.spirit > 150) { this.spirit = 150; }
   }
 
   takeCheer(cheer) {
@@ -62,19 +84,17 @@ class Member {
   takeLoot(loot) {
     if(!this.valid) return;
     this.gear = this.gear + loot;
-    this.takeBoost(20);
-    if (this.personality == 3) { this.takeBoost(10); } // This Loot Hoarder +10.
-    for (i = 1; i < raidSize; i++) {
-      if (member[i].personality == 3) { member[i].takeDrama(10); } // All Loot Hoarders -10.
+    this.takeBoost(loot);
+    for (i = 1; i < member.length; i++) {
+      if (member[i].personality == 3 && member[i].id !== this.id) { member[i].takeDrama(loot/2); } // All other Loot Hoarders take Drama.
     }
   }
 
   giftLoot(loot) {
     if(!this.valid) return;
     this.takeLoot(loot);
-    this.takeBoost(5); // This gets Loot, so avoid the following -5.
-    for (i = 1; i < raidSize; i++) {
-      member[i].takeDrama(5); // Everyone except leader -5 (-40).
+    for (i = 1; i < member.length; i++) {
+      if (member[i].id !== this.id) { member[i].takeDrama(loot/4); } // Everyone except leader and this take Drama.
     }
   }
 

@@ -8,21 +8,11 @@
   </head>
 
 <button id="startGameButton">Start Game</button>
-<br>
-<button id="pullButton" class="locked" disabled>Pull</button>
-<button id="lfmButton" class="locked" disabled>LFM</button>
-
-<label>
-  <input type="checkbox" id="cheerButton" name="cheerButton" disabled>Cheer
-</label>
-
-<label>
-  <input type="checkbox" id="rageButton" name="rageButton" disabled>Rage
-</label>
 
 <br>
-GM Commands:
-<button id="reduceTimeButton">Reduce Time</button>
+Test Commands:
+<button id="reduceTimeButton">all.time:-100</button>
+<button id="inactiveButton">target.active:0</button>
 
 
 
@@ -35,54 +25,36 @@ GM Commands:
 <br>
 <span>Loot: </span><span id="loot"></span>
 <br>
-<span>Target: </span><span id="targetId"></span>
-<br>
-<button class="targetButton locked" name="1" disabled>Target 1</button>
-<button class="targetButton locked" name="2" disabled>Target 2</button>
-<button class="targetButton locked" name="3" disabled>Target 3</button>
-<button class="targetButton locked" name="4" disabled>Target 4</button>
-<button class="targetButton locked" name="5" disabled>Target 5</button>
-<button class="targetButton locked" name="6" disabled>Target 6</button>
-<button class="targetButton locked" name="7" disabled>Target 7</button>
-<button class="targetButton locked" name="8" disabled>Target 8</button>
-<button class="targetButton locked" name="9" disabled>Target 9</button>
-<button class="targetButton locked" name="10" disabled>Target 10</button>
-<br><button id="rollLootButton" class="locked" disabled>Roll</button>
+<span>Target: </span><span id="targetId">?</span>
+<button class="targetButton locked" name="0" disabled>0</button>
+<button class="targetButton locked" name="1" disabled>1</button>
+<button class="targetButton locked" name="2" disabled>2</button>
+<button class="targetButton locked" name="3" disabled>3</button>
+<button class="targetButton locked" name="4" disabled>4</button>
+<button class="targetButton locked" name="5" disabled>5</button>
+<button class="targetButton locked" name="6" disabled>6</button>
+<button class="targetButton locked" name="7" disabled>7</button>
+<button class="targetButton locked" name="8" disabled>8</button>
+<button class="targetButton locked" name="9" disabled>9</button>
 
+<br>
+<button id="pullButton" class="locked" disabled>Pull</button>
+<button id="rollLootButton" class="locked" disabled>Roll</button>
+<button id="giftLootButton" class="locked" disabled>Gift</button>
+<button id="kickButton" class="locked" disabled>Kick</button>
+<button id="lfmButton" class="locked" disabled>LFM</button>
 
-<form id="giftForm">
-  <input type="submit" id="giftLootButton" value="Gift" class="locked" disabled></input>
-  <input type="radio" name="memberid" value="0" checked="checked">
-  <input type="radio" name="memberid" value="1">
-  <input type="radio" name="memberid" value="2">
-  <input type="radio" name="memberid" value="3">
-  <input type="radio" name="memberid" value="4">
-  <input type="radio" name="memberid" value="5">
-  <input type="radio" name="memberid" value="6">
-  <input type="radio" name="memberid" value="7">
-  <input type="radio" name="memberid" value="8">
-  <input type="radio" name="memberid" value="9">
-</form>
-<br>
-<form id="kickForm">
-  <input type="submit" id="kickButton" value="Kick" class="locked" disabled></input>
-  <input type="radio" name="memberKickId" value="0" checked="checked">
-  <input type="radio" name="memberKickId" value="1">
-  <input type="radio" name="memberKickId" value="2">
-  <input type="radio" name="memberKickId" value="3">
-  <input type="radio" name="memberKickId" value="4">
-  <input type="radio" name="memberKickId" value="5">
-  <input type="radio" name="memberKickId" value="6">
-  <input type="radio" name="memberKickId" value="7">
-  <input type="radio" name="memberKickId" value="8">
-  <input type="radio" name="memberKickId" value="9">
-</form>
-<br>
+<label>
+  <input type="checkbox" id="cheerButton" name="cheerButton" disabled>Cheer
+</label>
+<label>
+  <input type="checkbox" id="rageButton" name="rageButton" disabled>Rage
+</label>
 
 <script src="js/player.js"></script>
 <script src="js/member.js"></script>
-<script src="js/buttons.js"></script>
 <script src="js/main.js"></script>
+<script src="js/buttons.js"></script>
 
 <table>
   <tr>
@@ -92,6 +64,7 @@ GM Commands:
     <th>Gear</th>
     <th>Spirit</th>
     <th>Time</th>
+    <th>Active</th>
   </tr>
 <script>
 // Table values
@@ -103,6 +76,7 @@ GM Commands:
   +'<td id="gear-player"></td>'
   +'<td id="spirit-player"></td>'
   +'<td id="time-player"></td>'
+  +'<td id="active-player"></td>'
   +'</tr>')
   for (i = 1; i < 10; i++) {
     document.write('<tr>'
@@ -112,6 +86,7 @@ GM Commands:
     +'<td id="gear'+i+'"></td>'
     +'<td id="spirit'+i+'"></td>'
     +'<td id="time'+i+'"></td>'
+    +'<td id="active'+i+'"></td>'
     +'</tr>')
   }
 </script>
@@ -130,22 +105,28 @@ GM Commands:
 </ul>
 
 <ul>
-  Loot:
-  <li>Rolling Loot gives a random member +20 Gear and +20 Spirit.</li>
-  <li>Gifting Loot lets you choose the member, but deals 5 Drama to everyone else.</li>
+  Actions
+  <li>Roll: Spend -10 Loot to give a random member +20 Gear and +20 Spirit.</li>
+  <li>Gift: Spend -10 Loot to give the targeted member +20 Gear and +20 Spirit. Deal 5 Drama to all other members.</li>
+  <li>Kick: Remove the targeted member from the raid.</li>
+  <li>Cheer (toggle): All DPS is -100%. Boost all member's Spirit 1 per second (up to 100 Spirit).</li>
+  <li>Rage (toggle): All DPS is +100%. Deal 1 Drama per second to all members.</li>
+  <li>Pull: Start dealing damage to the enemy.</li>
+  <li>LFM: Spend 60 Time to find a random member to the selected raid slot.</li>
 </ul>
 
 <ul>
-  Leader Abilities:
-  <li>Cheer (toggle): All DPS is -100%, but boost everyone's Spirit 1 per second (up to 100 Spirit).</li>
-  <li>Rage (toggle): All DPS is +100%, but deal 1 Drama per second to all other members.</li>
+  Events
+  <li>Rage Quit: Deal 10 Drama to all members.</li>
+  <li>***Distraction, Disconnection, Toxic Cloud, Salt***</li>
+  <li></li>
 </ul>
 
 <ul>
   Stats:
   <li>DPS: Amount of damage dealt to the boss each second (Gear * Spirit).</li>
   <li>Gear: Increased with Loot.</li>
-  <li>Spirit: Drama reduces Spirit. When Spirit drops to 0, the member Rage Quits.</li>
+  <li>Spirit: Drama reduces Spirit. When Spirit drops to 0, the member leaves and triggers "Rage Quit".</li>
   <li>Time: Consumed each second. When Time drops to 0, the member leaves.</li>
 </ul>
 
